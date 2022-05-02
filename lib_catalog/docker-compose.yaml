@@ -1,0 +1,29 @@
+version: "3"
+
+services:
+  db:
+    image: postgres:13
+    restart: unless-stopped
+    networks:
+      - back
+    environment:
+      - POSTGRES_DB=django
+      - POSTGRES_USER=django
+      - POSTGRES_PASSWORD=django
+
+  backend:
+    build: .
+    command: ./start-back.sh
+    restart: unless-stopped
+    networks:
+      - back
+    links:
+      - "db:database"
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+networks:
+  back:
+    driver: bridge
