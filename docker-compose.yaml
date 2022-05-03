@@ -1,0 +1,52 @@
+version: "3"
+
+services:
+  front:
+    build: ./frontend
+    restart: always
+    networks:
+      front_net:
+        aliases:
+          - front
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+  db:
+    image: postgres
+    restart: unless-stopped
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      back_net:
+        aliases:
+          - database
+    environment:
+      - POSTGRES_DB=django
+      - POSTGRES_USER=django
+      - POSTGRES_PASSWORD=django
+
+  backend:
+    build: ./lib_catalog
+    command: ./start-back.sh
+    restart: always
+    networks:
+      front_net:
+        aliases:
+          - backend
+      back_net:
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+volumes:
+  db_data:
+
+networks:
+  front_net:
+    driver: bridge
+  back_net:
+    driver: bridge
+

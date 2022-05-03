@@ -4,6 +4,8 @@ services:
   db:
     image: postgres:13
     restart: unless-stopped
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
     networks:
       - back
     environment:
